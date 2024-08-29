@@ -37,10 +37,55 @@ describe("Test Example",()=>{
         cy.get('[data-test="nav-forms"]').click()
         cy.location("pathname").should("equal","/forms")
 
-     
+    })
 
+    it('intercept',()=>{
+        cy.intercept("POST",'http://localhost:3000/examples',{
+           fixture:'example.json'
+        }).as("POST_METHOD")
+
+        cy.get('[data-test="Post-btn"]').click()
 
     })
+
+    it.only('grudges',()=>{
+        cy.contains(/add some grudges/i)
+
+        for(var i=1;i <=3;i++){
+            cy.get('[data-test="grudge-list"]').within(()=>{
+                cy.get("ul").should('have.length',0)
+            })
+       
+            cy.get('[data-test="input-grudges"]').within(()=>{
+                cy.get("input").type("My Grudges")
+                
+            })
+    
+    
+    
+            cy.get('[data-test="add-grudge-btn"]').click()
+    
+            cy.get('[data-test="grudge-list"]').within(()=>{
+                cy.get("li").should('have.length.greaterThan',0)
+            })
+        }
+
+
+        cy.get('[data-test="grudge-list"] li').its(0).within(()=>{
+            cy.get("button").click()
+        })
+
+        cy.wait(600)
+
+         if(cy.get('div').should("not.contain",/add grudge/i))
+        {
+            cy.get('[data-test="del-grudge-btn"]').click()
+        }
+
+       
+   
+    })
+    
 
    
 })
